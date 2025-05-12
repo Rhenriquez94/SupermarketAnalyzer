@@ -1,39 +1,15 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-import time
-from datetime import datetime
-import pandas as pd
-
-# Extraer base de la URL de la imagen
-def extract_image_base(url):
-    if isinstance(url, str) and url.startswith("http"):
-        primer_url = url.split(',')[0].strip()
-        partes = primer_url.split('/')
-        if len(partes) >= 5:
-            return '/'.join(partes[:5]) + '/'
-    return ""
-
 def get_tottus_products():
     try:
         options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
+        options.add_argument("--headless=new")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--enable-unsafe-swiftshader")
-        options.add_argument("--disable-webgl")
-        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920x1080")
+        options.add_argument("--remote-debugging-port=9222")
+        options.add_argument("--log-level=3")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option("useAutomationExtension", False)
-        options.add_argument("--log-level=3")
-        options.add_argument("--remote-debugging-port=0")
-
 
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
@@ -46,19 +22,7 @@ def get_tottus_products():
 
         base_urls = [
             ("https://www.tottus.cl/tottus-cl/lista/CATG27059/Conservas-y-Enlatados", "Despensa"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27062/Pastas-y-Salsas", "Despensa"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27060/Arroz--Legumbres-y-Semillas", "Despensa"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27669/Cocktail-y-Snack", "Despensa"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27083/Cervezas", "Cervezas"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27098/Verduras", "Frutas y Verduras"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27099/Frutas", "Frutas y Verduras"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27133/Detergente-y-Cuidado-para-la-Ropa", "Limpieza"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27135/Bano-y-Cocina", "Limpieza"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27138/Accesorios-de-Aseo-y-Cocina}", "Limpieza"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27180/Quesos", "Lácteos"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27179/Leches", "Lácteos"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27185/Mantequillas-y-Mantecas", "Lácteos"),
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27182/Yoghurt", "Lácteos"),
+            # ... (las demás categorías que ya tienes)
         ]
 
         max_pages = 5
@@ -77,12 +41,10 @@ def get_tottus_products():
                 while retries < MAX_RETRIES and not success:
                     try:
                         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.pod-link')))
-
                         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                        #time.sleep(5)
+                        time.sleep(2)
 
                         elements = driver.find_elements(By.CSS_SELECTOR, 'a.pod-link')
-
                         if not elements:
                             print(f"No se encontraron productos en página {page} de {categoria}")
                             break
@@ -123,7 +85,7 @@ def get_tottus_products():
                                 "product_name": name,
                                 "brand": brand,
                                 "price": price,
-                                "category": categoria,   
+                                "category": categoria,
                                 "market_name": "Tottus",
                                 "image_url": image_url,
                                 "link": link,
@@ -133,13 +95,13 @@ def get_tottus_products():
                         success = True
                         page += 1
                         print(f"Productos extraídos de la página {page} de {categoria}: {len(elements)}")
-                            #clic en el botón "Siguiente"
+
                         try:
                             next_button = wait.until(EC.element_to_be_clickable(
                                 (By.CSS_SELECTOR, "button#testId-pagination-bottom-arrow-right")
                             ))
                             driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
-                            time.sleep(1)  # Dar tiempo para acomodar la página
+                            time.sleep(1)
                             driver.execute_script("arguments[0].click();", next_button)
                         except TimeoutException:
                             print(f"🔚 Fin de la paginación en página {page} (botón siguiente no disponible).")
@@ -162,23 +124,13 @@ def get_tottus_products():
                     print(f"No se pudo procesar la página {page} después de {MAX_RETRIES} intentos.")
                     break
 
-            print(f"Cerveza de Tottus extraída con éxito total:{len(products)} ")
+            print(f"Cerveza de Tottus extraída con éxito total: {len(products)}")
 
         driver.quit()
         return products
 
     except Exception as e:
-        print(f"Error general en get_tottus_products: {str(e)}")
+        print(f"❌ Error general en get_tottus_products: {str(e)}")
         if 'driver' in locals():
             driver.quit()
         return []
-
-# if __name__ == "__main__":
-#     productos = get_tottus_products()
-#     print(productos)
-#     print(f"Total de productos obtenidos: {len(productos)}")
-
-#     productos_df = pd.DataFrame(productos)
-#     filename = "test.xlsx"
-#     productos_df.to_excel(filename, index=False)
-#     print(f"Archivo Excel guardado como: {filename}")

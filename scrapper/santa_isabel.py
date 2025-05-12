@@ -13,19 +13,17 @@ import pandas as pd
 def get_sta_isabel_products():
     try:
         options = Options()
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
+        options.add_argument("--headless=new")  # Headless actualizado y más estable
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--enable-unsafe-swiftshader")
-        options.add_argument("--disable-webgl")
-        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920x1080")
+        options.add_argument("--remote-debugging-port=9222")
+        options.add_argument("--log-level=3")
+
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_experimental_option("useAutomationExtension", False)
-        options.add_argument("--log-level=3")
-        options.add_argument("--remote-debugging-port=0")
 
-        
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
 
@@ -35,22 +33,18 @@ def get_sta_isabel_products():
 
         products = []
 
-        # Lista de URLs y sus categorías
         base_urls = [
             ("https://www.santaisabel.cl/vinos-cervezas-y-licores?page={}", "Cervezas y Licores"),
             ("https://www.santaisabel.cl/despensa?page={}", "Despensa"),
             ("https://www.santaisabel.cl/frutas-y-verduras?page={}", "Frutas y Verduras"),
             ("https://www.santaisabel.cl/limpieza?page={}", "Limpieza"),
             ("https://www.santaisabel.cl/lacteos-y-quesos?page={}", "Lácteos"),
-              
         ]
 
         max_pages = 5
-        wait = WebDriverWait(driver,10)  
-
-        # Configuración de reintentos
+        wait = WebDriverWait(driver, 10)
         MAX_RETRIES = 3
-        RETRY_DELAY = 3 
+        RETRY_DELAY = 3
 
         for base_url, categoria in base_urls:
             page = 1
@@ -61,14 +55,11 @@ def get_sta_isabel_products():
                 while retries < MAX_RETRIES and not success:
                     try:
                         driver.get(base_url.format(page))
-                        
                         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.product-card-wrap')))
-                        
                         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                        #time.sleep(2)
+                        time.sleep(2)
 
                         elements = driver.find_elements(By.CSS_SELECTOR, 'div.product-card-wrap')
-
                         if not elements:
                             print(f"No se encontraron productos en página {page} de {categoria}")
                             break
@@ -85,7 +76,7 @@ def get_sta_isabel_products():
                                 brand = "No disponible"
 
                             try:
-                                price = el.find_element(By.CLASS_NAME, "area-price-regular span").text.strip()
+                                price = el.find_element(By.CLASS_NAME, "area-price-regular").text.strip()
                             except:
                                 price = "No disponible"
 
@@ -103,13 +94,14 @@ def get_sta_isabel_products():
                                 "product_name": name,
                                 "brand": brand,
                                 "price": price,
-                                "category": categoria,   
+                                "category": categoria,
                                 "market_name": "Santa Isabel",
                                 "image_url": image_url,
                                 "link": link,
                                 "query_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             })
-                        print(f"Productos extraídos de la página {page} de {categoria}: {len(elements)}")    
+
+                        print(f"Productos extraídos de la página {page} de {categoria}: {len(elements)}")
                         success = True
                         page += 1
 
@@ -120,15 +112,14 @@ def get_sta_isabel_products():
 
                     except Exception as page_error:
                         print(f"Error inesperado en página {page}: {str(page_error)}")
-                        retries = MAX_RETRIES  # Forzar salida
+                        retries = MAX_RETRIES
                         break
 
                 if not success:
                     print(f"No se pudo procesar la página {page} después de {MAX_RETRIES} intentos.")
                     break
 
-            print(f"Cerveza de SantaIsabel extraída con éxito total:{len(products)} ")
-         
+            print(f"Cerveza de SantaIsabel extraída con éxito total:{len(products)}")
 
         driver.quit()
         return products
@@ -138,14 +129,3 @@ def get_sta_isabel_products():
         if 'driver' in locals():
             driver.quit()
         return []
-    
-
-
-# if __name__ == "__main__":
-#     productos = get_sta_isabel_products()
-#     print(f"Total de productos obtenidos: {len(productos)}")
-
-#     productos_df = pd.DataFrame(productos)
-#     filename = "test.xlsx"
-#     productos_df.to_excel(filename, index=False)
-#     print(f"✅ Archivo Excel guardado como: {filename}")

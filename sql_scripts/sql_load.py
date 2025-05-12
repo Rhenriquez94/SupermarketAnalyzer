@@ -52,3 +52,4 @@ def cargar_csvs_en_raw():
         print(f"✅ {len(df)} registros insertados en 'raw_products'.")
     except Exception as e:
         print(f"❌ Error insertando en 'raw_products': {e}")
+
