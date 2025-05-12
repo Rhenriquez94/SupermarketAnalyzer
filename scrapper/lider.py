@@ -121,11 +121,11 @@ def get_lider_products():
         return []
 
 
-if __name__ == "__main__":
-    productos = get_lider_products()
-    print(f"Total de productos obtenidos: {len(productos)}")
+# if __name__ == "__main__":
+#     productos = get_lider_products()
+#     print(f"Total de productos obtenidos: {len(productos)}")
 
-    productos_df = pd.DataFrame(productos)
-    filename = "test.xlsx"
-    productos_df.to_excel(filename, index=False)
-    print(f"✅ Archivo Excel guardado como: {filename}")
+#     productos_df = pd.DataFrame(productos)
+#     filename = "test.xlsx"
+#     productos_df.to_excel(filename, index=False)
+#     print(f"✅ Archivo Excel guardado como: {filename}")

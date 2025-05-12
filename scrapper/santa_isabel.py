@@ -45,7 +45,7 @@ def get_sta_isabel_products():
               
         ]
 
-        max_pages = 3
+        max_pages = 20
         wait = WebDriverWait(driver,10)  
 
         # Configuración de reintentos
@@ -141,11 +141,11 @@ def get_sta_isabel_products():
     
 
 
-if __name__ == "__main__":
-    productos = get_sta_isabel_products()
-    print(f"Total de productos obtenidos: {len(productos)}")
+# if __name__ == "__main__":
+#     productos = get_sta_isabel_products()
+#     print(f"Total de productos obtenidos: {len(productos)}")
 
-    productos_df = pd.DataFrame(productos)
-    filename = "test.xlsx"
-    productos_df.to_excel(filename, index=False)
-    print(f"✅ Archivo Excel guardado como: {filename}")
+#     productos_df = pd.DataFrame(productos)
+#     filename = "test.xlsx"
+#     productos_df.to_excel(filename, index=False)
+#     print(f"✅ Archivo Excel guardado como: {filename}")
