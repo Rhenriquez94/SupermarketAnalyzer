@@ -43,7 +43,7 @@ def get_lider_products():
             ("https://knasta.cl/results?category=160007&page={}", "Lácteos"),    
         ]
 
-        max_pages = 20  # Límite de páginas por categoría
+        max_pages = 5  # Límite de páginas por categoría
         wait = WebDriverWait(driver, 10)
 
         # Recorremos cada URL y su categoría

@@ -61,7 +61,7 @@ def get_tottus_products():
             ("https://www.tottus.cl/tottus-cl/lista/CATG27182/Yoghurt", "Lácteos"),
         ]
 
-        max_pages = 10
+        max_pages = 5
         wait = WebDriverWait(driver, 10)
         MAX_RETRIES = 3
         RETRY_DELAY = 3
