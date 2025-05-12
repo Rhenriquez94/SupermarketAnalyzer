@@ -56,7 +56,7 @@ def get_lider_products():
                     wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="resultContainer"]/section[2]/div[2]/div[3]')))
                     
                     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(5)
+                    #time.sleep(2)
 
                     elements = driver.find_elements(By.CLASS_NAME, "lazyload-wrapper ")
                     if not elements:

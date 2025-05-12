@@ -58,7 +58,7 @@ def get_jumbo_products():
                     wait.until(EC.presence_of_element_located((By.CLASS_NAME, "shelf-content")))
                     
                     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(5)
+                    #time.sleep(5)
 
                     elements = driver.find_elements(By.XPATH, "//div[@data-cnstrc-item-name]")
                     if not elements:

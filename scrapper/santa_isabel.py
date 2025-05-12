@@ -65,7 +65,7 @@ def get_sta_isabel_products():
                         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.product-card-wrap')))
                         
                         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                        time.sleep(5)
+                        #time.sleep(2)
 
                         elements = driver.find_elements(By.CSS_SELECTOR, 'div.product-card-wrap')
 

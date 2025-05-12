@@ -79,7 +79,7 @@ def get_tottus_products():
                         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'a.pod-link')))
 
                         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                        time.sleep(5)
+                        #time.sleep(5)
 
                         elements = driver.find_elements(By.CSS_SELECTOR, 'a.pod-link')
 
@@ -173,12 +173,12 @@ def get_tottus_products():
             driver.quit()
         return []
 
-if __name__ == "__main__":
-    productos = get_tottus_products()
-    print(productos)
-    print(f"Total de productos obtenidos: {len(productos)}")
+# if __name__ == "__main__":
+#     productos = get_tottus_products()
+#     print(productos)
+#     print(f"Total de productos obtenidos: {len(productos)}")
 
-    productos_df = pd.DataFrame(productos)
-    filename = "test.xlsx"
-    productos_df.to_excel(filename, index=False)
-    print(f"Archivo Excel guardado como: {filename}")
+#     productos_df = pd.DataFrame(productos)
+#     filename = "test.xlsx"
+#     productos_df.to_excel(filename, index=False)
+#     print(f"Archivo Excel guardado como: {filename}")
