@@ -45,10 +45,23 @@ def get_tottus_products():
         products = []
 
         base_urls = [
-            ("https://www.tottus.cl/tottus-cl/lista/CATG27083/Cervezas?page=1", "Cervezas"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27059/Conservas-y-Enlatados", "Despensa"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27062/Pastas-y-Salsas", "Despensa"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27060/Arroz--Legumbres-y-Semillas", "Despensa"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27669/Cocktail-y-Snack", "Despensa"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27083/Cervezas", "Cervezas"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27098/Verduras", "Frutas y Verduras"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27099/Frutas", "Frutas y Verduras"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27133/Detergente-y-Cuidado-para-la-Ropa", "Limpieza"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27135/Bano-y-Cocina", "Limpieza"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27138/Accesorios-de-Aseo-y-Cocina}", "Limpieza"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27180/Quesos", "Lácteos"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27179/Leches", "Lácteos"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27185/Mantequillas-y-Mantecas", "Lácteos"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27182/Yoghurt", "Lácteos"),
         ]
 
-        max_pages = 5
+        max_pages = 10
         wait = WebDriverWait(driver, 10)
         MAX_RETRIES = 3
         RETRY_DELAY = 3
@@ -101,8 +114,6 @@ def get_tottus_products():
                                 except NoSuchElementException:
                                     image_url = ""
 
-                            image_base_url = extract_image_base(image_url)
-
                             try:
                                 link = el.get_attribute("href")
                             except:
@@ -121,7 +132,7 @@ def get_tottus_products():
 
                         success = True
                         page += 1
-
+                        print(f"Productos extraídos de la página {page} de {categoria}: {len(elements)}")
                             #clic en el botón "Siguiente"
                         try:
                             next_button = wait.until(EC.element_to_be_clickable(
@@ -162,12 +173,12 @@ def get_tottus_products():
             driver.quit()
         return []
 
-# if __name__ == "__main__":
-#     productos = get_tottus_products()
-#     print(productos)
-#     print(f"Total de productos obtenidos: {len(productos)}")
+if __name__ == "__main__":
+    productos = get_tottus_products()
+    print(productos)
+    print(f"Total de productos obtenidos: {len(productos)}")
 
-#     productos_df = pd.DataFrame(productos)
-#     filename = "test.xlsx"
-#     productos_df.to_excel(filename, index=False)
-#     print(f"Archivo Excel guardado como: {filename}")
+    productos_df = pd.DataFrame(productos)
+    filename = "test.xlsx"
+    productos_df.to_excel(filename, index=False)
+    print(f"Archivo Excel guardado como: {filename}")

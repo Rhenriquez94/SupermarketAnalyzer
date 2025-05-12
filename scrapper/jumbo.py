@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 from datetime import datetime
-
+import pandas as pd
 
 def get_jumbo_products():
     try:
@@ -36,11 +36,17 @@ def get_jumbo_products():
 
         #Lista de URLs y sus categorías
         base_urls = [
-            ("https://www.jumbo.cl/vinos-cervezas-y-licores/cervezas/cervezas-tradicionales?page={}", "Cervezas"),
+            ("https://www.jumbo.cl/vinos-cervezas-y-licores?page={}", "Cervezas y Licores"),
+            ("https://www.jumbo.cl/lacteos-y-quesos?page={}", "Lácteos"),
+            ("https://www.jumbo.cl/despensa?page={}", "Despensa"),
+            ("https://www.jumbo.cl/frutas-y-verduras/verduras", "Frutas y Verduras"),
+            ("https://www.jumbo.cl/frutas-y-verduras/frutas", "Frutas y Verduras"),
+            ("https://www.jumbo.cl/limpieza?page={}", "Limpieza"),
+            
         ]
 
-        max_pages = 10  # Límite de páginas por categoría
-        wait = WebDriverWait(driver, 20)
+        max_pages = 20  # Límite de páginas por categoría
+        wait = WebDriverWait(driver, 10)
 
         # Recorremos cada URL y su categoría
         for base_url, categoria in base_urls:
@@ -49,12 +55,12 @@ def get_jumbo_products():
                 try:
                     driver.get(base_url.format(page))
                     
-                    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "product-card")))
+                    wait.until(EC.presence_of_element_located((By.CLASS_NAME, "shelf-content")))
                     
                     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(8)
+                    time.sleep(5)
 
-                    elements = driver.find_elements(By.CLASS_NAME, "product-card")
+                    elements = driver.find_elements(By.XPATH, "//div[@data-cnstrc-item-name]")
                     if not elements:
                         break
 
@@ -63,27 +69,27 @@ def get_jumbo_products():
                         time.sleep(0.2) 
 
                         try:
-                            name = el.find_element(By.CLASS_NAME, "product-card-name").text.strip()
+                            name = el.get_attribute("data-cnstrc-item-name")
                         except:
                             name = "No disponible"
 
                         try:
-                            brand = el.find_element(By.CLASS_NAME, "product-card-brand").text.strip()
+                            brand = el.find_element(By.TAG_NAME, "p").text.strip()
                         except:
                             brand = "No disponible"
 
                         try:
-                            price = el.find_element(By.CLASS_NAME, "area-price-regular span").text.strip()
+                            price = el.get_attribute("data-cnstrc-item-price")
                         except:
                             price = "No disponible"
 
                         try:
-                            image_url = el.find_element(By.TAG_NAME, "source").get_attribute("srcset")
+                            image_url = el.find_element(By.TAG_NAME, "img").get_attribute("src")
                         except:
                             image_url = ""
 
                         try:
-                            link = el.find_element(By.XPATH, ".//ancestor::a").get_attribute("href")
+                            link = el.find_element(By.TAG_NAME, "a").get_attribute("href")
                         except:
                             link = ""
 
@@ -97,13 +103,13 @@ def get_jumbo_products():
                             "link": link,
                             "query_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         })
-
+                    print(f"Productos extraídos de la página {page} de {categoria}: {len(elements)}")
                     page += 1
 
                 except Exception as page_error:
                     print(f"Error en página {page} de categoría {categoria}: {str(page_error)}")
                     break
-            print(f"Cerveza de Jumbo extraída con éxito total:{len(products)} ")
+            print(f"{categoria} de Jumbo extraída con éxito total:{len(products)} ")
 
 
         driver.quit()
@@ -116,12 +122,11 @@ def get_jumbo_products():
         return []
 
 
-# if __name__ == "__main__":
-#     productos = get_jumbo_products()
-#     print(productos)
-#     print(f"Total de productos obtenidos: {len(productos)}")
+if __name__ == "__main__":
+    productos = get_jumbo_products()
+    print(f"Total de productos obtenidos: {len(productos)}")
 
-#     productos_df = pd.DataFrame(productos)
-#     filename = "test.xlsx"
-#     productos_df.to_excel(filename, index=False)
-#     print(f"✅ Archivo Excel guardado como: {filename}")
+    productos_df = pd.DataFrame(productos)
+    filename = "test.xlsx"
+    productos_df.to_excel(filename, index=False)
+    print(f"✅ Archivo Excel guardado como: {filename}")

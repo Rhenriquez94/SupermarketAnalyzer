@@ -65,7 +65,6 @@ if __name__ == "__main__":
         ]
 
         for script_path in scripts_etl:
-            print(f"▶️ Ejecutando: {script_path}")
             try:
                 ejecutar_sql_script(script_path, engine)
                 print(f"✅ Terminado: {script_path}")

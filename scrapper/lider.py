@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 from datetime import datetime
 import pandas as pd
@@ -25,7 +24,7 @@ def get_lider_products():
         options.add_argument("--log-level=3")
         options.add_argument("--remote-debugging-port=0")
 
-
+        
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
 
@@ -35,104 +34,98 @@ def get_lider_products():
 
         products = []
 
+        #Lista de URLs y sus categorías
         base_urls = [
-            ("https://www.lider.cl/browse/bebidas-y-licores/cervezas/45297969_64295593?page={}", "Cervezas"),
+            ("https://knasta.cl/results?category=160011&page={}", "Cervezas y Licores"),
+            ("https://knasta.cl/results?category=160009&page={}", "Despensa"),
+            ("https://knasta.cl/results?category=160005&page={}", "Frutas y Verduras"),
+            ("https://knasta.cl/results?category=160012&page={}", "Limpieza"),
+            ("https://knasta.cl/results?category=160007&page={}", "Lácteos"),    
         ]
 
-        max_pages = 5
-        wait = WebDriverWait(driver, 15)
-        MAX_RETRIES = 3
-        RETRY_DELAY = 3
+        max_pages = 20  # Límite de páginas por categoría
+        wait = WebDriverWait(driver, 10)
 
+        # Recorremos cada URL y su categoría
         for base_url, categoria in base_urls:
             page = 1
             while page <= max_pages:
-                retries = 0
-                success = False
+                try:
+                    driver.get(base_url.format(page))
+                    
+                    wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="resultContainer"]/section[2]/div[2]/div[3]')))
+                    
+                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    time.sleep(5)
 
-                while retries < MAX_RETRIES and not success:
-                    try:
-                        driver.get(base_url.format(page))
-
-                        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '[data-testid="list-view"]')))
-
-                        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                        time.sleep(5)
-
-                        elements = driver.find_elements(By.CSS_SELECTOR, '[data-testid="list-view"]')
-
-                        try:
-                            enlaces = driver.find_elements(By.CSS_SELECTOR, "a.w-100.h-100.z-1.hide-sibling-opacity.absolute")
-                            hrefs = [enlace.get_attribute("href") for enlace in enlaces]
-                        except NoSuchElementException:
-                            hrefs = []
-
-                        if len(elements) != len(hrefs):
-                            print(f"Desajuste entre productos y enlaces: productos={len(elements)}, enlaces={len(hrefs)}")
-
-                        for i, el in enumerate(elements):
-                            try:
-                                name = el.find_element(By.CSS_SELECTOR, 'span[data-automation-id="product-title"]').text.strip()
-                            except NoSuchElementException:
-                                name = "Nombre no disponible"
-
-                            try:
-                                price = el.find_element(By.CSS_SELECTOR, '[data-automation-id="product-price"] div').text.strip()
-                            except NoSuchElementException:
-                                price = "Precio no disponible"
-
-                            try:
-                                brand = el.find_element(By.CSS_SELECTOR, 'div.mb1.mt2.b.f6.black.mr1.lh-copy').text.strip()
-                            except NoSuchElementException:
-                                brand = "Marca no disponible"
-
-                            try:
-                                image_url = el.find_element(By.TAG_NAME, "img").get_attribute("srcset")
-                            except:
-                                image_url = ""
-
-                            try:
-                                href = hrefs[i]
-                                link = href if href.startswith("http") else f"https://www.lider.cl{href}"
-                            except IndexError:
-                                link = "No disponible"
-
-                            products.append({
-                                "product_name": name,
-                                "brand": brand,
-                                "price": price,
-                                "category": categoria,   
-                                "market_name": "Lider",
-                                "image_url": image_url,
-                                "link": link,
-                                "query_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                            })
-
-                        success = True
-                        page += 1
-
-                    except TimeoutException:
-                        retries += 1
-                        print(f"Timeout en página {page}. Reintentando ({retries}/{MAX_RETRIES})...")
-                        time.sleep(RETRY_DELAY)
-
-                    except Exception as page_error:
-                        print(f"Error inesperado en página {page}: {str(page_error)}")
-                        retries = MAX_RETRIES
+                    elements = driver.find_elements(By.CLASS_NAME, "lazyload-wrapper ")
+                    if not elements:
                         break
 
-                if not success:
-                    print(f"No se pudo procesar la página {page} después de {MAX_RETRIES} intentos.")
-                    break
+                    for el in elements:
+                        driver.execute_script("arguments[0].scrollIntoView();", el)
+                        time.sleep(0.2) 
 
-            print(f"Cerveza de lider extraída con éxito total:{len(products)} ")
+                        try:
+                            name_div = el.find_element(By.XPATH, './/div[contains(@class, "line-clamp-2")]')
+                            lines = name_div.text.strip().split('\n')
+                            name = lines[1] if len(lines) > 1 else lines[0]
+                        except Exception:
+                            name = "No disponible"
+
+                        try:
+                           brand = el.find_element(By.XPATH, './/span[contains(@class, "font-extrabold")]').text.strip()
+                        except Exception:
+                            brand = "No disponible"
+
+                        try:
+                            price = el.find_element(By.XPATH, './/div[contains(@class, "text-principal")]').text.strip()
+                        except:
+                            price = "No disponible"
+
+                        try:
+                            image_url = el.find_element(By.XPATH, './/img[contains(@class, "object-contain")]').get_attribute("src")
+                        except:
+                            image_url = ""
+
+                        try:
+                            link = el.find_element(By.TAG_NAME, "a").get_attribute("href")
+                        except:
+                            link = ""
+
+                        products.append({
+                            "product_name": name,
+                            "brand": brand,
+                            "price": price,
+                            "category": categoria,   
+                            "market_name": "Lider",
+                            "image_url": image_url,
+                            "link": link,
+                            "query_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        })
+                    print(f"Productos extraídos de la página {page} de {categoria}: {len(elements)}")
+                    page += 1
+
+                except Exception as page_error:
+                    print(f"Error en página {page} de categoría {categoria}: {str(page_error)}")
+                    break
+         
 
         driver.quit()
         return products
 
     except Exception as e:
-        print(f"❌ Error general en get_lider_products: {str(e)}")
+        print(f"Error general en get_lider_products: {str(e)}")
         if 'driver' in locals():
             driver.quit()
         return []
 
+
+if __name__ == "__main__":
+    productos = get_lider_products()
+    print(f"Total de productos obtenidos: {len(productos)}")
+
+    productos_df = pd.DataFrame(productos)
+    filename = "test.xlsx"
+    productos_df.to_excel(filename, index=False)
+    print(f"✅ Archivo Excel guardado como: {filename}")

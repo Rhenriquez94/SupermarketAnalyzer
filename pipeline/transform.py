@@ -1,9 +1,14 @@
 import pandas as pd
 
-
 def clean_data(productos):
     df = pd.DataFrame(productos)
-    
+
+    df = df[
+        (df['price'] != "No disponible") &
+        (df['product_name'].notna()) & (df['product_name'] != "No disponible") & (df['product_name'].str.strip() != "") &
+        (df['brand'].notna()) & (df['brand'] != "No disponible") & (df['brand'].str.strip() != "")
+    ]
+
     # Limpiar columna de precio
     df['price'] = df['price'].astype(str)
     df['price'] = df['price'].str.replace(r'[$.]', '', regex=True).str.strip()

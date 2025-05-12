@@ -37,10 +37,15 @@ def get_sta_isabel_products():
 
         # Lista de URLs y sus categorías
         base_urls = [
-            ("https://www.santaisabel.cl/vinos-cervezas-y-licores/cervezas?page={}", "Cervezas"),
+            ("https://www.santaisabel.cl/vinos-cervezas-y-licores?page={}", "Cervezas y Licores"),
+            ("https://www.santaisabel.cl/despensa?page={}", "Despensa"),
+            ("https://www.santaisabel.cl/frutas-y-verduras?page={}", "Frutas y Verduras"),
+            ("https://www.santaisabel.cl/limpieza?page={}", "Limpieza"),
+            ("https://www.santaisabel.cl/lacteos-y-quesos?page={}", "Lácteos"),
+              
         ]
 
-        max_pages = 5
+        max_pages = 3
         wait = WebDriverWait(driver,10)  
 
         # Configuración de reintentos
@@ -104,7 +109,7 @@ def get_sta_isabel_products():
                                 "link": link,
                                 "query_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             })
-
+                        print(f"Productos extraídos de la página {page} de {categoria}: {len(elements)}")    
                         success = True
                         page += 1
 
@@ -136,12 +141,11 @@ def get_sta_isabel_products():
     
 
 
-# if __name__ == "__main__":
-#     productos = get_sta_isabel_products()
-#     print(productos)
-#     print(f"Total de productos obtenidos: {len(productos)}")
+if __name__ == "__main__":
+    productos = get_sta_isabel_products()
+    print(f"Total de productos obtenidos: {len(productos)}")
 
-#     productos_df = pd.DataFrame(productos)
-#     filename = "test.xlsx"
-#     productos_df.to_excel(filename, index=False)
-#     print(f"✅ Archivo Excel guardado como: {filename}")
+    productos_df = pd.DataFrame(productos)
+    filename = "test.xlsx"
+    productos_df.to_excel(filename, index=False)
+    print(f"✅ Archivo Excel guardado como: {filename}")
