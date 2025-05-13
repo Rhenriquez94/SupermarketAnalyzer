@@ -1,3 +1,18 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+import time
+from datetime import datetime
+import pandas as pd
+
+
+
+
 def get_tottus_products():
     try:
         options = Options()
@@ -22,7 +37,15 @@ def get_tottus_products():
 
         base_urls = [
             ("https://www.tottus.cl/tottus-cl/lista/CATG27059/Conservas-y-Enlatados", "Despensa"),
-            # ... (las demás categorías que ya tienes)
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27060/Arroz--Legumbres-y-Semillas", "Despensa"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27062/Pastas-y-Salsas", "Despensa"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27669/Cocktail-y-Snack", "Despensa"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27206/Cervezas-Artesanales", "Cervezas y Licores"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27205/Cervezas-Clasicas", "Cervezas y Licores"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27098/Verduras", "Frutas y Verduras"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27099/Frutas", "Frutas y Verduras"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27135/Bano-y-Cocina", "Limpieza"),
+            ("https://www.tottus.cl/tottus-cl/lista/CATG27179/Leches", "Lácteos"),
         ]
 
         max_pages = 5
@@ -134,3 +157,14 @@ def get_tottus_products():
         if 'driver' in locals():
             driver.quit()
         return []
+
+
+
+# if __name__ == "__main__":
+#     productos = get_tottus_products()
+#     print(f"Total de productos obtenidos: {len(productos)}")
+
+#     productos_df = pd.DataFrame(productos)
+#     filename = "test.xlsx"
+#     productos_df.to_excel(filename, index=False)
+#     print(f"✅ Archivo Excel guardado como: {filename}")
