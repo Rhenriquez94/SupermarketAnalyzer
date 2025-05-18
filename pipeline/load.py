@@ -11,7 +11,7 @@ def save_to_csv(df, carpeta, bucket_name=None):
 
     # Guardar localmente
     df.to_csv(full_path, index=False)
-    print(f"✅ Archivo CSV guardado localmente como: {full_path}")
+    print(f"Archivo CSV guardado localmente como: {full_path}")
 
     # Subir a S3 si se proporciona un bucket
     if bucket_name:
