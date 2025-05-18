@@ -40,7 +40,7 @@ def get_lider_products():
         ]
 
         max_pages = 5
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 5)
 
         for base_url, categoria in base_urls:
             page = 1

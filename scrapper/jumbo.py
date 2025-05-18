@@ -46,7 +46,7 @@ def get_jumbo_products():
         ]
 
         max_pages = 5  # Límite de páginas por categoría
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 5)
 
         # Recorremos cada URL y su categoría
         for base_url, categoria in base_urls:
