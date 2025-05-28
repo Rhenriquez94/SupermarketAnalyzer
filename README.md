@@ -1,6 +1,6 @@
-# 🍺 BeerAnalyzer: ETL de precios de cervezas con Python, PostgreSQL y AWS
+#  SuperMarketAnalyzer: ETL de precios de supermercados para analizar su historico con Python, PostgreSQL y AWS
 
-BeerAnalyzer es un pipeline ETL desarrollado para extraer, transformar y almacenar precios de cervezas en supermercados chilenos. Este proyecto está pensado para monitorear la evolución de precios por producto, supermercado y fecha, permitiendo análisis de mercado eficientes y automatizados.
+SuperMarketAnalyzer es un pipeline ETL desarrollado para extraer, transformar y almacenar precios de supermercados chilenos. Este proyecto está pensado para monitorear la evolución de precios por producto, supermercado y fecha, permitiendo análisis de mercado eficientes y automatizados.
 ![image](https://github.com/user-attachments/assets/899668a2-cfac-4a41-9ab7-738b10ef3840)
 
 
@@ -148,6 +148,6 @@ pip install -r requirements.txt
 
 ## 👨‍💻 Autor
 
-Desarrollado por [Rodrigo Henríquez](https://github.com/Rhenriquez94) como parte de su portafolio de Data Engineer.
+Desarrollado por [Rodrigo Henríquez](https://github.com/Rhenriquez94).
 
 ---
