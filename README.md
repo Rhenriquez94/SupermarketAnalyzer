@@ -1,7 +1,8 @@
 #  SuperMarketAnalyzer: ETL de precios de supermercados para analizar su historico con Python, PostgreSQL y AWS
 
 SuperMarketAnalyzer es un pipeline ETL desarrollado para extraer, transformar y almacenar precios de supermercados chilenos. Este proyecto está pensado para monitorear la evolución de precios por producto, supermercado y fecha, permitiendo análisis de mercado eficientes y automatizados.
-![image](https://github.com/user-attachments/assets/899668a2-cfac-4a41-9ab7-738b10ef3840)
+![image](https://github.com/user-attachments/assets/7888b57a-4d1b-4901-aff6-c4f5c93e5431)
+
 
 
 ---
